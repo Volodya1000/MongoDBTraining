@@ -16,7 +16,7 @@ public class DeleteMovieHandler : IRequestHandler<DeleteMovieCommand,Unit>
 
     public async Task<Unit> Handle(DeleteMovieCommand request, CancellationToken cst = default)
     {
-        var movie = await _repository.GetById(request.Id, cst);
+        var movie = await _repository.GetByIdAsync(request.Id, cst);
         if (movie == null)
             throw new KeyNotFoundException($"Movie with Id {request.Id} not found.");
 

@@ -9,11 +9,16 @@ public class ApplicationDbContext
 {
     private readonly IMongoDatabase _database;
 
+    public IMongoClient Client { get; }
+
     public ApplicationDbContext(IMongoClient mongoClient,IOptions<MongoSettings> options)
     {
         var settings = options.Value;
         _database = mongoClient.GetDatabase(settings.DatabaseName);
+        Client = mongoClient;
     }
 
-    public IMongoCollection<Movie> Movies => _database.GetCollection<Movie>(CollectionNames.Users);
+    public IMongoCollection<Movie> Movies => _database.GetCollection<Movie>(CollectionNames.Movies);
+
+    public IMongoCollection<Actor> Actors => _database.GetCollection<Actor>(CollectionNames.Actors);
 }

@@ -20,7 +20,7 @@ public class UpdateMovieHandler : IRequestHandler<UpdateMovieCommand, Unit>
 
     public async Task<Unit> Handle(UpdateMovieCommand request, CancellationToken cst = default)
     {
-        var existingMovie = await _repository.GetById(request.Id, cst);
+        var existingMovie = await _repository.GetByIdAsync(request.Id, cst);
         if (existingMovie == null)
             throw new KeyNotFoundException($"Movie with Id {request.Id} not found.");
 
