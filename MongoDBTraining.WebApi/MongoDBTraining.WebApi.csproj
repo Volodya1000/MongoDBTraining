@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="13.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
     <PackageReference Include="DotSwashbuckle.AspNetCore.Swagger" Version="3.0.11" />
     <PackageReference Include="DotSwashbuckle.AspNetCore.SwaggerGen" Version="3.0.11" />
@@ -14,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MongoDBTraining.Application\MongoDBTraining.Application.csproj" />
     <ProjectReference Include="..\MongoDBTraining.Domain\MongoDBTraining.Domain.csproj" />
     <ProjectReference Include="..\MongoDBTraining.Persistence\MongoDBTraining.Persistence.csproj" />
   </ItemGroup>
