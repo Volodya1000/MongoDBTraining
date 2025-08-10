@@ -15,8 +15,5 @@ public class ApplicationDbContext
         _database = mongoClient.GetDatabase(settings.DatabaseName);
     }
 
-
     public IMongoCollection<Movie> Movies => _database.GetCollection<Movie>(CollectionNames.Users);
-
-
 }
