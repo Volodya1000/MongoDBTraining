@@ -21,4 +21,24 @@ public class ApplicationDbContext
     public IMongoCollection<Movie> Movies => _database.GetCollection<Movie>(CollectionNames.Movies);
 
     public IMongoCollection<Actor> Actors => _database.GetCollection<Actor>(CollectionNames.Actors);
+
+    /// <summary>
+    /// Универсальный метод для выполнения операций в транзакции.
+    /// </summary>
+    public async Task ExecuteInTransactionAsync(Func<IClientSessionHandle, Task> action, CancellationToken cst = default)
+    {
+        using var session = await Client.StartSessionAsync(cancellationToken: cst);
+        session.StartTransaction();
+
+        try
+        {
+            await action(session);
+            await session.CommitTransactionAsync(cancellationToken: cst);
+        }
+        catch
+        {
+            await session.AbortTransactionAsync(cancellationToken: cst);
+            throw;
+        }
+    }
 }

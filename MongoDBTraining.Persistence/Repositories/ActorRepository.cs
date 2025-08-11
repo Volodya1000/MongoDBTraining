@@ -14,26 +14,12 @@ public class ActorRepository:BaseRepository<Actor>,IActorRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public override async Task DeleteAsync(Actor actor, CancellationToken cst = default)
-    {
-        using var session = await _context.Client.StartSessionAsync(cancellationToken: cst);
-        session.StartTransaction();
+    public override Task DeleteAsync(Actor actor, CancellationToken cst = default) =>
+         _context.ExecuteInTransactionAsync(async session =>
+         {
+             await _context.Actors.DeleteOneAsync(session, a => a.Id == actor.Id, cancellationToken: cst);
 
-        try
-        {
-            // Удаляем актёра
-            await _context.Actors.DeleteOneAsync(session, a => a.Id == actor.Id, cancellationToken: cst);
-
-            // Удаляем actorId из всех movies
-            var update = Builders<Movie>.Update.Pull(m => m.ActorIds, actor.Id);
-            await _context.Movies.UpdateManyAsync(session, m => m.ActorIds.Contains(actor.Id), update, cancellationToken: cst);
-
-            await session.CommitTransactionAsync(cancellationToken: cst);
-        }
-        catch
-        {
-            await session.AbortTransactionAsync(cancellationToken: cst);
-            throw;
-        }
-    }
+             var updateMovies = Builders<Movie>.Update.Pull(m => m.ActorIds, actor.Id);
+             await _context.Movies.UpdateManyAsync(session, m => m.ActorIds.Contains(actor.Id), updateMovies, cancellationToken: cst);
+         }, cst);
 }
