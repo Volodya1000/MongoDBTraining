@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using MongoDBTraining.Application.Features.MovieFeatures.Add;
+using MongoDBTraining.Application.Features.MovieFeatures.AddActor;
 using MongoDBTraining.Application.Features.MovieFeatures.Delete;
 using MongoDBTraining.Application.Features.MovieFeatures.GetAll;
 using MongoDBTraining.Application.Features.MovieFeatures.Update;
@@ -41,6 +42,13 @@ public class MoviesController : ControllerBase
 
     [HttpDelete]
     public async Task<ActionResult> Delete([FromBody] DeleteMovieCommand command, CancellationToken cst = default)
+    {
+        await _mediator.Send(command, cst);
+        return NoContent();
+    }
+
+    [HttpPost("AddActor")]
+    public async Task<ActionResult> AddActorToMovie([FromBody] AddActorToMovieCommand command, CancellationToken cst = default)
     {
         await _mediator.Send(command, cst);
         return NoContent();

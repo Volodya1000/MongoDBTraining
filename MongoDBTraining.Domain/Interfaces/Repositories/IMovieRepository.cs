@@ -4,5 +4,5 @@ namespace MongoDBTraining.Domain.Interfaces.Repositories;
 
 public interface IMovieRepository : IRepository<Movie>
 {
-    Task AddActorToMovieAsync(string movieId, string actorId, CancellationToken cst = default);
+    Task AddActorToMovieAsync(Movie movie, Actor actor, CancellationToken cst = default);
 }
