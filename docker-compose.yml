@@ -1,0 +1,67 @@
+services:
+  mongodbtraining.webapi:
+    image: ${DOCKER_REGISTRY-}mongodbtrainingwebapi
+    build:
+      context: .
+      dockerfile: MongoDBTraining.WebApi/Dockerfile
+    environment:
+      - MongoSettings__ConnectionString=mongodb://mongo1:27017/?replicaSet=rs0
+      - MongoSettings__DatabaseName=MovieDb
+    ports:
+      - "8080:8080"
+    depends_on:
+      mongo1:
+        condition: service_started
+      setup-replica:
+        condition: service_completed_successfully
+    networks:
+      - app-network
+
+  mongo1:
+    image: mongo:7.0
+    container_name: mongodbtraining-mongo1
+    command: mongod --replSet rs0 --bind_ip_all
+    ports:
+      - "27017:27017"
+    volumes:
+      - "mongo1_data:/data/db"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  setup-replica:
+    image: mongo:7.0
+    container_name: mongodbtraining-setup-replica
+    depends_on:
+      mongo1:
+        condition: service_healthy
+    networks:
+      - app-network
+    command: |
+      bash -c "
+      set -e
+      echo 'Waiting for mongo1 to be available...'
+      until mongosh --host mongo1 --eval 'db.adminCommand({ping:1})' > /dev/null 2>&1; do
+        echo -n '.'
+        sleep 1
+      done
+      echo 'mongo1 is up. Initiating replica set...'
+      mongosh --host mongo1 --eval 'rs.initiate({ _id: \"rs0\", members: [{ _id: 0, host: \"mongo1:27017\" }] })' --quiet
+      echo 'Waiting for primary to be ready...'
+      until mongosh --host mongo1 --eval 'rs.isMaster().ismaster' --quiet | grep true > /dev/null 2>&1; do
+        echo -n '.'
+        sleep 1
+      done
+      echo 'Replica set is fully configured and ready.'
+      "
+
+volumes:
+  mongo1_data:
+
+networks:
+  app-network:
+    driver: bridge

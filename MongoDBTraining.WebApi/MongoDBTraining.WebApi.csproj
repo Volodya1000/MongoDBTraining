@@ -4,6 +4,9 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>d14ad153-bd17-4d2b-b7ad-dbd427c1058f</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +15,7 @@
     <PackageReference Include="DotSwashbuckle.AspNetCore.Swagger" Version="3.0.11" />
     <PackageReference Include="DotSwashbuckle.AspNetCore.SwaggerGen" Version="3.0.11" />
     <PackageReference Include="DotSwashbuckle.AspNetCore.SwaggerUI" Version="3.0.11" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
   </ItemGroup>
 
   <ItemGroup>

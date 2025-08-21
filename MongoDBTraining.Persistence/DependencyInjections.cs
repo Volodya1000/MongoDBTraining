@@ -10,27 +10,21 @@ namespace MongoDBTraining.Persistence;
 
 public static class DependencyInjections
 {
-    public static IServiceCollection ConfigurePersistence(this IServiceCollection services, 
-                                                          IConfiguration configuration)
+    public static IServiceCollection ConfigurePersistence(this IServiceCollection services, IConfiguration configuration)
     {
         services
-           .AddOptions<MongoSettings>()
-           .Bind(configuration.GetSection(nameof(MongoSettings)))
-           .ValidateOnStart();
-
+            .AddOptions<MongoSettings>()
+            .Bind(configuration.GetSection(nameof(MongoSettings)))
+            .ValidateOnStart();
         services.AddSingleton<IValidateOptions<MongoSettings>, MongoSettingsValidation>();
-
         services.AddSingleton<IMongoClient>(sp =>
         {
             var settings = sp.GetRequiredService<IOptions<MongoSettings>>().Value;
             return new MongoClient(settings.ConnectionString);
         });
-
         services.AddScoped<ApplicationDbContext>();
-
         services.AddScoped<IMovieRepository, MovieRepository>();
         services.AddScoped<IActorRepository, ActorRepository>();
-
         return services;
     }
 }
